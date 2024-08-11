@@ -493,7 +493,7 @@ def version_info():
     """Handler for --version."""
     try:
         platex_version = head(
-            subprocess.check_output(["platex", "--version"], universal_newlines=True),
+            subprocess.check_output(["platex", "--version"], text=True),
             lines=3,
         )
     except FileNotFoundError:
@@ -501,7 +501,7 @@ def version_info():
 
     try:
         xelatex_version = head(
-            subprocess.check_output(["xelatex", "--version"], universal_newlines=True),
+            subprocess.check_output(["xelatex", "--version"], text=True),
             lines=2,
         )
     except FileNotFoundError:
