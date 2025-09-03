@@ -32,12 +32,16 @@ def get_lines(filename: str = "docsbuild.log") -> list[str]:
     return lines
 
 
-def calc_time(lines: list[str]) -> None:
+def calc_time(lines: list[str], kind: str = "xx") -> None:
     in_progress = False
     in_progress_line = ""
 
-    print("Start                | Version | Language | Build          | Trigger")
-    print(":--                  | :--:    | :--:     | --:            | :--:")
+    print(
+        "Start                | Kind         | Version | Language | Build          | Trigger"
+    )
+    print(
+        ":--                  | :--:         | :--:    | :--:     | --:            | :--:"
+    )
 
     for line in lines:
         line = line.strip()
@@ -51,7 +55,7 @@ def calc_time(lines: list[str]) -> None:
             fmt_duration = format_seconds(state_data["last_build_duration"])
             reason = state_data["triggered_by"]
             print(
-                f"{start:%Y-%m-%d %H:%M UTC} | {version: <7} | {language: <8} | {fmt_duration:<14} | {reason}"
+                f"{start:%Y-%m-%d %H:%M UTC} | {kind: <12} | {version: <7} | {language: <8} | {fmt_duration:<14} | {reason}"
             )
 
         if line.endswith("Build start."):
@@ -65,14 +69,14 @@ def calc_time(lines: list[str]) -> None:
             timestamp = f"{line[:16]} UTC"
             _, fmt_duration = line.removesuffix(").").split("(")
             print(
-                f"{timestamp: <20} | --FULL- | -BUILD-- | {fmt_duration:<14} | -----------"
+                f"{timestamp: <20} | {kind: <12} | --FULL- | -BUILD-- | {fmt_duration:<14} | -----------"
             )
 
     if in_progress:
         start_timestamp = f"{in_progress_line[:16]} UTC"
         language, version = in_progress_line.split(" ")[3].removesuffix(":").split("/")
         print(
-            f"{start_timestamp: <20} | {version: <7} | {language: <8} | In progress... | ..."
+            f"{start_timestamp: <20} | {kind: <12}| {version: <7} | {language: <8} | In progress... | ..."
         )
 
     print()
@@ -99,16 +103,16 @@ if __name__ == "__main__":
         print("Build times (HTML only; English)")
         print("=======================")
         print()
-        calc_time(get_lines("docsbuild-only-html-en.log"))
+        calc_time(get_lines("docsbuild-only-html-en.log"), "only-html-en")
 
     if "only-html" in args.select_output:
         print("Build times (HTML only)")
         print("=======================")
         print()
-        calc_time(get_lines("docsbuild-only-html.log"))
+        calc_time(get_lines("docsbuild-only-html.log"), "only-html")
 
     if "no-html" in args.select_output:
         print("Build times (no HTML)")
         print("=====================")
         print()
-        calc_time(get_lines("docsbuild-no-html.log"))
+        calc_time(get_lines("docsbuild-no-html.log"), "no-html")
